@@ -10,10 +10,11 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       margin: 10,
       backgroundColor: 'white',
+      borderRadius:5
     },
     image: {
-      width: 50,
-      height: 180,
+      width: 60,
+      height: 80,
       marginRight: 10,
     },
     textContainer: {

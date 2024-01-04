@@ -1,10 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useEffect, useState} from 'react';
 import {FlatList, Image, Text, TouchableOpacity, View} from 'react-native';
-import styles from '../listofBeverages/style';
-
-export default function ListOfBeverages() {
-  const [beers, setBeers] = useState([]);
+import styles from './style';
+export default function userDetails() {
+  const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
 
   useEffect(() => {
@@ -15,26 +14,27 @@ export default function ListOfBeverages() {
   const fetchData = async page => {
     try {
       const response = await fetch(
-        `https://api.punkapi.com/v2/beers?page=${page}&per_page=10`,
+        `https://reqres.in/api/users?page=${page}&per_page=6`,
       );
       const data = await response.json();
+
       // Initialize bookmarked status from AsyncStorage
-      const bookmarkedBeers = await loadBookmarks();
-      const beersWithBookmarks = data.map(beer => ({
-        ...beer,
-        bookmarked: bookmarkedBeers.includes(beer.id.toString()),
+      const bookmarkedUsers = await loadBookmarks();
+      const usersWithBookmarks = data.data.map(user => ({
+        ...user,
+        bookmarked: bookmarkedUsers.includes(user.id.toString()),
       }));
-      // setBeers(beersWithBookmarks);
-      setBeers(prevData => [...prevData, ...beersWithBookmarks]);
+
+      setUsers(prevData => [...prevData, ...usersWithBookmarks]);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
 
   const toggleBookmark = async id => {
-    setBeers(prevBeers =>
-      prevBeers.map(beer =>
-        beer.id === id ? {...beer, bookmarked: !beer.bookmarked} : beer,
+    setUsers(prevUsers =>
+      prevUsers.map(user =>
+        user.id === id ? {...user, bookmarked: !user.bookmarked} : user,
       ),
     );
     updateBookmarks(id);
@@ -43,17 +43,17 @@ export default function ListOfBeverages() {
   const updateBookmarks = async id => {
     try {
       const bookmarks = await AsyncStorage.getItem('bookmarks');
-      let bookmarkedBeers = bookmarks ? JSON.parse(bookmarks) : [];
+      let bookmarkedUsers = bookmarks ? JSON.parse(bookmarks) : [];
 
-      if (bookmarkedBeers.includes(id.toString())) {
-        bookmarkedBeers = bookmarkedBeers.filter(
+      if (bookmarkedUsers.includes(id.toString())) {
+        bookmarkedUsers = bookmarkedUsers.filter(
           beerId => beerId !== id.toString(),
         );
       } else {
-        bookmarkedBeers.push(id.toString());
+        bookmarkedUsers.push(id.toString());
       }
 
-      await AsyncStorage.setItem('bookmarks', JSON.stringify(bookmarkedBeers));
+      await AsyncStorage.setItem('bookmarks', JSON.stringify(bookmarkedUsers));
     } catch (error) {
       console.error('Error updating bookmarks:', error);
     }
@@ -68,13 +68,14 @@ export default function ListOfBeverages() {
       return [];
     }
   };
-
   const renderItem = ({item}) => (
     <View style={styles.itemContainer}>
-      <Image source={{uri: item.image_url}} style={styles.image} />
+      <Image source={{uri: item.avatar}} style={styles.image} />
       <View style={styles.textContainer}>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.tagline}>{item.tagline}</Text>
+        <Text style={styles.name}>
+          Name: {`${item.first_name} ${item.last_name}`}
+        </Text>
+        <Text style={styles.tagline}>Email: {item.email}</Text>
       </View>
       <TouchableOpacity
         onPress={() => toggleBookmark(item.id)}
@@ -94,7 +95,7 @@ export default function ListOfBeverages() {
   return (
     <View>
       <FlatList
-        data={beers}
+        data={users}
         renderItem={renderItem}
         keyExtractor={item => item.id.toString()}
         onEndReached={() => {

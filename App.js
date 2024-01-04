@@ -2,8 +2,10 @@ import * as React from 'react';
 import {Text, View, Image} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import listofBeverages from './src/listofBeverages/index';
-import bookedBeverages from './src/bookedBeverages/index';
+import userDetails from './src/userDetails';
+import favouriteUsers from './src/favouriteUsers';
+
+
 
 const Tab = createBottomTabNavigator();
 
@@ -15,8 +17,8 @@ export default function App() {
           labelPosition: 'below-icon',
         }}>
         <Tab.Screen
-          name="List Of Beverages"
-          component={listofBeverages}
+          name="User Detail"
+          component={userDetails}
           options={{
             tabBarLabel: ({focused, color, size}) => (
               <Text
@@ -25,15 +27,15 @@ export default function App() {
                   fontSize: 12,
                   fontWeight: 'bold',
                 }}>
-                List
+                User Detail
               </Text>
             ),
             tabBarIcon: ({focused}) => (
               <Image
                 source={
                   focused
-                    ? require('./src/images/softdrink.png')
-                    : require('./src/images/softdrink.png')
+                    ? require('./src/images/group.png')
+                    : require('./src/images/group.png')
                 }
                 style={{width: 28, height: 28}}
               />
@@ -41,8 +43,8 @@ export default function App() {
           }}
         />
         <Tab.Screen
-          name="Booked Beverage"
-          component={bookedBeverages}
+          name="Favourite User"
+          component={favouriteUsers}
           options={{
             tabBarLabel: ({focused, color, size}) => (
               <Text
